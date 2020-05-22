@@ -1,11 +1,18 @@
 package main;
 
 public class ExpressionEval {
-	public boolean debug = true;
 	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E'};
 
+	public String Evaluate(String expression, Double in) {
+		while(expression.contains("x")) {
+			expression = sub(expression, in.toString(), expression.indexOf("x"), expression.indexOf("x") + 1);
+			System.out.println(expression);
+		}
+		return Evaluate(expression);
+	}
+	
 	public String Evaluate(String expression) {
-		if(debug)
+		if(Main.debug)
 			System.out.println(expression);
 			
 		if (expression.contains("(")) {
@@ -77,7 +84,7 @@ public class ExpressionEval {
 		}
 	}
 
-	public ExpressionData isolateExpression(String expression, int index) {		
+	private ExpressionData isolateExpression(String expression, int index) {		
 		int lower = 0, upper = 0;
 		for (int i = index - 1; i >= 0; i--) {
 			if (!isNumber(expression.charAt(i))) {
@@ -154,7 +161,7 @@ public class ExpressionEval {
 	 * @param end
 	 * @return
 	 */
-	private String sub(String in, String sub, int start, int end) {
+	public String sub(String in, String sub, int start, int end) {
 		return in.substring(0, start) + sub + in.substring(end);
 	}
 
@@ -163,7 +170,7 @@ public class ExpressionEval {
 	 * 
 	 * @return
 	 */
-	public int parenthesisIndex(String input) {
+	private int parenthesisIndex(String input) {
 		int n = 0;
 		for (int i = input.indexOf('(') + 1; i < input.length(); i++) {
 			if (input.charAt(i) == '(')
