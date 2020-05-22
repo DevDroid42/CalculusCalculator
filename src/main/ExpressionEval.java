@@ -1,0 +1,202 @@
+package main;
+
+public class ExpressionEval {
+	public boolean debug = true;
+	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E'};
+
+	public String Evaluate(String expression) {
+		if(debug)
+			System.out.println(expression);
+			
+		if (expression.contains("(")) {
+			int start = expression.indexOf("(") + 1;
+			int end = parenthesisIndex(expression);
+			return Evaluate(sub(expression, Evaluate(expression.substring(start, end)), start - 1, end + 1));
+		} else if (expression.contains("^")) {
+			ExpressionData data = isolateExpression(expression, expression.indexOf('^'));
+			return Evaluate(sub(expression, power(data.expression), data.lower, data.upper));
+
+		} else if (expression.contains("*") || expression.contains("/")) {
+			if (decideMult(expression)) {
+				ExpressionData data = isolateExpression(expression, expression.indexOf('*'));
+				return Evaluate(sub(expression, multiply(data.expression), data.lower, data.upper));
+			} else {
+				ExpressionData data = isolateExpression(expression, expression.indexOf('/'));
+				return Evaluate(sub(expression, divide(data.expression), data.lower, data.upper));
+			}
+		} else if (expression.contains("+") || expression.contains("-")) {
+			if (decideAdd(expression)) {
+				ExpressionData data = isolateExpression(expression, expression.indexOf('+'));
+				return Evaluate(sub(expression, add(data.expression), data.lower, data.upper));
+			} else {
+				ExpressionData data = isolateExpression(expression, expression.indexOf('-'));
+				return Evaluate(sub(expression, subtract(data.expression), data.lower, data.upper));
+			}
+		} else {			
+			return expression;
+		}
+	}
+
+	/**
+	 * determines if there are multiple multiplication and divisions in the
+	 * expression. If not it chooses the only option. If there are it chooses the
+	 * first one
+	 * 
+	 * @param expression
+	 * @return returns true for * and false for /
+	 */
+	private boolean decideMult(String expression) {
+		if (expression.contains("*") && !expression.contains("/")) {
+			return true;
+		} else if (!expression.contains("*") && expression.contains("/")) {
+			return false;
+		} else if (expression.indexOf('*') < expression.indexOf('/')) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * determines if there are multiple multiplication and divisions in the
+	 * expression. If not it chooses the only option. If there are it chooses the
+	 * first one
+	 * 
+	 * @param expression
+	 * @return returns true for + and false for -
+	 */
+	private boolean decideAdd(String expression) {
+		if (expression.contains("+") && !expression.contains("-")) {
+			return true;
+		} else if (!expression.contains("+") && expression.contains("-")) {
+			return false;
+		} else if (expression.indexOf('+') < expression.indexOf('-')) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public ExpressionData isolateExpression(String expression, int index) {		
+		int lower = 0, upper = 0;
+		for (int i = index - 1; i >= 0; i--) {
+			if (!isNumber(expression.charAt(i))) {
+				lower = i;
+				break;
+			}
+			if (i == 0) {
+				lower = i - 1;
+			}
+		}
+
+		for (int i = index + 1; i < expression.length(); i++) {
+			if (!isNumber(expression.charAt(i))) {
+				upper = i - 1;
+				break;
+			}
+			if (i == expression.length() - 1) {
+				upper = i;
+			}
+		}
+		//System.out.println("lower: " + lower + "\t upper: " + upper);
+		return new ExpressionData(lower + 1, upper + 1, expression.substring(lower + 1, upper + 1));
+	}
+
+	/**
+	 * evaluates an expression such as 2^3. Must only have two numbers and the
+	 * carrot operator.
+	 * 
+	 * @param Expression
+	 * @return
+	 */
+	private String power(String Expression) {
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('^')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('^') + 1));
+		Double result = (Math.pow(first, second));
+		return result.toString();
+	}
+
+	private String multiply(String Expression) {
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('*')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('*') + 1));
+		Double result = first * second;
+		return result.toString();
+	}
+
+	private String divide(String Expression) {
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('/')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('/') + 1));
+		Double result = first / second;
+		return result.toString();
+	}
+
+	private String add(String Expression) {
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('+')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('+') + 1));
+		Double result = first + second;
+		return result.toString();
+	}
+
+	private String subtract(String Expression) {
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('-')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('-') + 1));
+		Double result = first - second;
+		return result.toString();
+	}
+
+	/**
+	 * returns a string with another string inserted in place of a portion of the
+	 * input string. To insert without replacing set the start and end indexes equal
+	 * 
+	 * @param in
+	 * @param sub
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	private String sub(String in, String sub, int start, int end) {
+		return in.substring(0, start) + sub + in.substring(end);
+	}
+
+	/**
+	 * returns the index of the closing parenthesis
+	 * 
+	 * @return
+	 */
+	public int parenthesisIndex(String input) {
+		int n = 0;
+		for (int i = input.indexOf('(') + 1; i < input.length(); i++) {
+			if (input.charAt(i) == '(')
+				n++;
+			if (input.charAt(i) == ')')
+				n--;
+			if (n < 0)
+				return i;
+		}
+		System.out.println("Syntax error");
+		return 0;
+	}
+
+	public boolean isNumber(char character) {
+		for (int i = 0; i < decimals.length; i++) {
+			if (character == decimals[i])
+				return true;
+		}
+		return false;
+	}
+
+}
+
+//there is probably a better way to do this but this will work
+class ExpressionData {
+	public ExpressionData(int lower, int upper, String expression) {
+		this.lower = lower;
+		this.upper = upper;
+		this.expression = expression;
+	}
+
+	// the original bounds of the expression to be used when subbing the evaluated
+	// expression back in
+	public int lower, upper;
+	public String expression;
+}
