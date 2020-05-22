@@ -19,7 +19,7 @@ public class Calculator {
 
 	public void displayFunctions() {
 		for (int i = 0; i < functions.size(); i++) {
-			System.out.println("Type:" + functions.get(i).type.toString() + "Y" + i + "=" + functions.get(i).function);
+			System.out.println("Type:" + functions.get(i).type.toString() + "\t Y" + i + "=" + functions.get(i).function);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class Calculator {
 		if (Main.debug)
 			System.out.println("Interpreting function: " + y);
 
-		switch (functions.get(yIndex).type) {
+		switch (functions.get(index).type) {
 		case normal:
 			return Double.parseDouble(eval.Evaluate(y, (double) x));
 		case derivitive:

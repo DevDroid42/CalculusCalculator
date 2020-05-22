@@ -1,20 +1,21 @@
 package main;
 
 public class ExpressionEval {
-	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E'};
+	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E' };
 
 	public String Evaluate(String expression, Double in) {
-		while(expression.contains("x")) {
+		while (expression.contains("x")) {
 			expression = sub(expression, in.toString(), expression.indexOf("x"), expression.indexOf("x") + 1);
-			System.out.println(expression);
+			if (Main.debug)
+				System.out.println(expression);
 		}
 		return Evaluate(expression);
 	}
-	
+
 	public String Evaluate(String expression) {
-		if(Main.debug)
+		if (Main.debug)
 			System.out.println(expression);
-			
+
 		if (expression.contains("(")) {
 			int start = expression.indexOf("(") + 1;
 			int end = parenthesisIndex(expression);
@@ -39,7 +40,7 @@ public class ExpressionEval {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('-'));
 				return Evaluate(sub(expression, subtract(data.expression), data.lower, data.upper));
 			}
-		} else {			
+		} else {
 			return expression;
 		}
 	}
@@ -84,7 +85,7 @@ public class ExpressionEval {
 		}
 	}
 
-	private ExpressionData isolateExpression(String expression, int index) {		
+	private ExpressionData isolateExpression(String expression, int index) {
 		int lower = 0, upper = 0;
 		for (int i = index - 1; i >= 0; i--) {
 			if (!isNumber(expression.charAt(i))) {
@@ -105,7 +106,7 @@ public class ExpressionEval {
 				upper = i;
 			}
 		}
-		//System.out.println("lower: " + lower + "\t upper: " + upper);
+		// System.out.println("lower: " + lower + "\t upper: " + upper);
 		return new ExpressionData(lower + 1, upper + 1, expression.substring(lower + 1, upper + 1));
 	}
 

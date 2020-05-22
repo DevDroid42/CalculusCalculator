@@ -1,0 +1,112 @@
+package main;
+
+import java.util.*;
+
+public class CommandManager {
+	Calculator calc = new Calculator();
+	ExpressionEval eval = new ExpressionEval();
+
+	/**
+	 * takes in a string and extracts the command and arguments. Then calls and
+	 * returns the data in the form of a string
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public void ParseInput(String input) {
+		String command = input.substring(0, input.indexOf(";"));
+		List<String> args = getArgs(input);
+		/*
+		 * System.out.println("Args"); for(String arg : args){ System.out.print(arg +
+		 * ", "); } System.out.println();
+		 */
+		switch (command) {
+		case ("Help"):
+			System.out.println(Main.helpText);
+		case ("setFunction"):
+
+			switch (args.get(2)) {
+			case "0":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
+				break;
+			case "1":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivitive);
+				break;
+			case "2":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
+				break;
+			default:
+				System.out.println(
+						"not a recognized function type. Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
+			}
+
+		case ("view"):
+			calc.displayFunctions();
+			break;
+		case ("clear"):
+			for(int i = 0; i<50;i++) {
+				System.out.println();
+			}
+			break;
+		case ("debug"):
+			Main.debug = Boolean.parseBoolean(args.get(0));
+			break;
+		case ("graph"):
+			break;
+		default:
+			System.out.println(eval.Evaluate(input));
+		}
+	}
+
+	/**
+	 * gets all terms enclosed by spaces in input
+	 * 
+	 * @param _input
+	 * @return a list of arguments
+	 */
+	private List<String> getArgs(String _input) {
+		List<String> args = new ArrayList<String>();
+		for (int i = 1; getOccurrenceIndex(i + 1, _input, " ") != -1; i++) {
+			args.add(_input.substring(getOccurrenceIndex(i, _input, " ") + 1, getOccurrenceIndex(i + 1, _input, " ")));
+
+		}
+
+		return args;
+	}
+
+	/**
+	 * gets the index of the nth occurrence of a character in a string. Returns -1
+	 * if the character is not found
+	 * 
+	 * @param _occurrence - the occurrence amount
+	 * @param _input      - the string
+	 * @param _character  - the character to look for
+	 * @return
+	 */
+	public int getOccurrenceIndex(int _occurrence, String _input, String _character) {
+		if (_input.contains(_character)) {
+			int index = 0;
+			int tempIndex = 0;
+			// index starts at 0 and moves up the string to each occurrence of character
+			for (int i = 0; i < _occurrence; i++) {
+				if (!_input.contains(_character)) {
+					index = -1;
+					break;
+				}
+				tempIndex = _input.indexOf(_character);
+				_input = _input.substring(tempIndex + 1);
+				if (i == 0) {
+					index += tempIndex;
+				} else {
+					index += tempIndex + 1;
+				}
+			}
+
+			return index;
+		} else {
+			return -1;
+		}
+
+	}
+
+}
