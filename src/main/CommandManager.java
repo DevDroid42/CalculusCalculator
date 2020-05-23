@@ -14,47 +14,67 @@ public class CommandManager {
 	 * @return
 	 */
 	public void ParseInput(String input) {
-		String command = input.substring(0, input.indexOf(";"));
+		input += " ";
+		String command = input.substring(0, input.indexOf(" "));
 		List<String> args = getArgs(input);
-		/*
-		 * System.out.println("Args"); for(String arg : args){ System.out.print(arg +
-		 * ", "); } System.out.println();
-		 */
-		switch (command) {
-		case ("Help"):
-			System.out.println(Main.helpText);
-		case ("setFunction"):
 
-			switch (args.get(2)) {
-			case "0":
-				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
+		if (Main.debug) {
+			System.out.println("Args with received" + command + "command:");
+			for (String arg : args) {
+				System.out.print(arg + ", ");
+			}
+			System.out.println();
+		}
+
+		try {
+			switch (command) {
+			case ("help"):
+				System.out.println(Main.helpText);
 				break;
-			case "1":
-				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivitive);
+			case ("setFunction"):
+
+				switch (args.get(2)) {
+				case "0":
+					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
+					break;
+				case "1":
+					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivitive);
+					break;
+				case "2":
+					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
+					break;
+				default:
+					System.out.println(
+							"not a recognized function type. Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
+				}
+
 				break;
-			case "2":
-				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
+			case ("view"):
+				calc.displayFunctions();
+				break;
+			case ("clear"):
+				for (int i = 0; i < 50; i++) {
+					System.out.println();
+				}
+				break;
+			case ("debug"):
+				Main.debug = Boolean.parseBoolean(args.get(0));
+				break;
+			case ("graph"):
+				break;
+			case ("evaluate"):
+				calc.InterpretFunc(Integer.parseInt(args.get(0)), Double.parseDouble(args.get(1)));
+				break;
+			case ("exit"):
+				Main.running = false;
 				break;
 			default:
-				System.out.println(
-						"not a recognized function type. Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
+				System.out.println(eval.Evaluate(input));
 			}
-
-		case ("view"):
-			calc.displayFunctions();
-			break;
-		case ("clear"):
-			for(int i = 0; i<50;i++) {
-				System.out.println();
-			}
-			break;
-		case ("debug"):
-			Main.debug = Boolean.parseBoolean(args.get(0));
-			break;
-		case ("graph"):
-			break;
-		default:
-			System.out.println(eval.Evaluate(input));
+		} catch (Exception e) {
+			if (Main.debug)
+				e.printStackTrace();
+			System.out.println("syntax error. Invalid arguments");
 		}
 	}
 

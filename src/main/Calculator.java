@@ -37,7 +37,7 @@ public class Calculator {
 	/**
 	 * handles function nesting and calc operations
 	 */
-	public double InterpretFunc(int index, int x) {
+	public double InterpretFunc(int index, double x) {
 		String y = functions.get(index).function;
 		int yIndex = 0;
 		while (y.contains("Y")) {
@@ -53,7 +53,7 @@ public class Calculator {
 
 		switch (functions.get(index).type) {
 		case normal:
-			return Double.parseDouble(eval.Evaluate(y, (double) x));
+			return Double.parseDouble(eval.Evaluate(y, x));
 		case derivitive:
 			return derivitive(y, x);
 		case integral:

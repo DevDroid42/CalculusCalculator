@@ -13,6 +13,8 @@ public class ExpressionEval {
 	}
 
 	public String Evaluate(String expression) {
+		expression = removeSpaces(expression);
+		
 		if (Main.debug)
 			System.out.println(expression);
 
@@ -32,17 +34,24 @@ public class ExpressionEval {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('/'));
 				return Evaluate(sub(expression, divide(data.expression), data.lower, data.upper));
 			}
-		} else if (expression.contains("+") || expression.contains("-")) {
+		} else if (expression.contains("+") || expression.contains("~")) {
 			if (decideAdd(expression)) {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('+'));
 				return Evaluate(sub(expression, add(data.expression), data.lower, data.upper));
 			} else {
-				ExpressionData data = isolateExpression(expression, expression.indexOf('-'));
+				ExpressionData data = isolateExpression(expression, expression.indexOf('~'));
 				return Evaluate(sub(expression, subtract(data.expression), data.lower, data.upper));
 			}
 		} else {
 			return expression;
 		}
+	}
+	
+	private String removeSpaces(String in) {
+		while(in.contains(" ")) {
+			in = sub(in, "", in.indexOf(" "), in.indexOf(" ") + 1);
+		}
+		return in;
 	}
 
 	/**
@@ -74,11 +83,11 @@ public class ExpressionEval {
 	 * @return returns true for + and false for -
 	 */
 	private boolean decideAdd(String expression) {
-		if (expression.contains("+") && !expression.contains("-")) {
+		if (expression.contains("+") && !expression.contains("~")) {
 			return true;
-		} else if (!expression.contains("+") && expression.contains("-")) {
+		} else if (!expression.contains("+") && expression.contains("~")) {
 			return false;
-		} else if (expression.indexOf('+') < expression.indexOf('-')) {
+		} else if (expression.indexOf('+') < expression.indexOf('~')) {
 			return true;
 		} else {
 			return false;
@@ -146,8 +155,8 @@ public class ExpressionEval {
 	}
 
 	private String subtract(String Expression) {
-		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('-')));
-		double second = Double.parseDouble(Expression.substring(Expression.indexOf('-') + 1));
+		double first = Double.parseDouble(Expression.substring(0, Expression.indexOf('~')));
+		double second = Double.parseDouble(Expression.substring(Expression.indexOf('~') + 1));
 		Double result = first - second;
 		return result.toString();
 	}
