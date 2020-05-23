@@ -38,7 +38,7 @@ public class CommandManager {
 					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
 					break;
 				case "1":
-					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivitive);
+					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivative);
 					break;
 				case "2":
 					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
@@ -63,7 +63,7 @@ public class CommandManager {
 			case ("graph"):
 				break;
 			case ("evaluate"):
-				calc.InterpretFunc(Integer.parseInt(args.get(0)), Double.parseDouble(args.get(1)));
+				System.out.println(calc.InterpretFunc(Integer.parseInt(args.get(0)), Double.parseDouble(args.get(1))));
 				break;
 			case ("exit"):
 				Main.running = false;

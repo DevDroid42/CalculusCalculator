@@ -54,7 +54,7 @@ public class Calculator {
 		switch (functions.get(index).type) {
 		case normal:
 			return Double.parseDouble(eval.Evaluate(y, x));
-		case derivitive:
+		case derivative:
 			return derivitive(y, x);
 		case integral:
 			return integral(y, x);
@@ -69,7 +69,7 @@ public class Calculator {
 
 class FunctionData {
 	public enum FunctionType {
-		normal, derivitive, integral
+		normal, derivative, integral
 	};
 
 	public FunctionData(String function, FunctionType type) {
