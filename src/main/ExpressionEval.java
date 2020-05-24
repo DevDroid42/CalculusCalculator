@@ -1,7 +1,7 @@
 package main;
 
 public class ExpressionEval {
-	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E' };
+	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E', '-'};
 
 	public String Evaluate(String expression, Double in) {
 		while (expression.contains("x")) {
@@ -14,37 +14,53 @@ public class ExpressionEval {
 
 	public String Evaluate(String expression) {
 		expression = removeSpaces(expression);
-		
+		expression = formatSubtraction(expression);
+		return EvaluateR(expression);
+
+	}
+	
+	private String EvaluateR(String expression) {
 		if (Main.debug)
 			System.out.println(expression);
 
 		if (expression.contains("(")) {
 			int start = expression.indexOf("(") + 1;
 			int end = parenthesisIndex(expression);
-			return Evaluate(sub(expression, Evaluate(expression.substring(start, end)), start - 1, end + 1));
+			return EvaluateR(sub(expression, EvaluateR(expression.substring(start, end)), start - 1, end + 1));
 		} else if (expression.contains("^")) {
 			ExpressionData data = isolateExpression(expression, expression.indexOf('^'));
-			return Evaluate(sub(expression, power(data.expression), data.lower, data.upper));
+			return EvaluateR(sub(expression, power(data.expression), data.lower, data.upper));
 
 		} else if (expression.contains("*") || expression.contains("/")) {
 			if (decideMult(expression)) {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('*'));
-				return Evaluate(sub(expression, multiply(data.expression), data.lower, data.upper));
+				return EvaluateR(sub(expression, multiply(data.expression), data.lower, data.upper));
 			} else {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('/'));
-				return Evaluate(sub(expression, divide(data.expression), data.lower, data.upper));
+				return EvaluateR(sub(expression, divide(data.expression), data.lower, data.upper));
 			}
 		} else if (expression.contains("+") || expression.contains("~")) {
 			if (decideAdd(expression)) {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('+'));
-				return Evaluate(sub(expression, add(data.expression), data.lower, data.upper));
+				return EvaluateR(sub(expression, add(data.expression), data.lower, data.upper));
 			} else {
 				ExpressionData data = isolateExpression(expression, expression.indexOf('~'));
-				return Evaluate(sub(expression, subtract(data.expression), data.lower, data.upper));
+				return EvaluateR(sub(expression, subtract(data.expression), data.lower, data.upper));
 			}
 		} else {
 			return expression;
 		}
+	}
+	
+	private String formatSubtraction(String in) {
+		if(Main.debug)
+			System.out.print("Formatting subtraction in:"  + in + "\t");
+		while(in.contains("-")) {
+			in = sub(in, "~", in.indexOf("-"), in.indexOf("-") + 1);
+		}
+		if(Main.debug)
+			System.out.println("Out: " + in);
+		return in;
 	}
 	
 	private String removeSpaces(String in) {
