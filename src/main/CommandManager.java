@@ -5,6 +5,7 @@ import java.util.*;
 public class CommandManager {
 	Calculator calc = new Calculator();
 	ExpressionEval eval = new ExpressionEval();
+	List<String> args;
 
 	/**
 	 * takes in a string and extracts the command and arguments. Then calls and
@@ -16,10 +17,10 @@ public class CommandManager {
 	public void ParseInput(String input) {
 		input += " ";
 		String command = input.substring(0, input.indexOf(" "));
-		List<String> args = getArgs(input);
+		args = getArgs(input);
 
 		if (Main.debug) {
-			System.out.println("Args with received" + command + "command:");
+			System.out.println("Args with received: " + command + " :command:");
 			for (String arg : args) {
 				System.out.print(arg + ", ");
 			}
@@ -32,22 +33,13 @@ public class CommandManager {
 				System.out.println(Main.helpText);
 				break;
 			case ("setFunction"):
-
-				switch (args.get(2)) {
-				case "0":
-					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
-					break;
-				case "1":
-					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivative);
-					break;
-				case "2":
-					calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
-					break;
-				default:
-					System.out.println(
-							"not a recognized function type. Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
-				}
-
+				setFunction();
+				break;
+			case ("sf"):
+				setFunction();
+				break;
+			case ("clearFunc"):
+				calc.clearFunc();
 				break;
 			case ("view"):
 				calc.displayFunctions();
@@ -75,6 +67,29 @@ public class CommandManager {
 			if (Main.debug)
 				e.printStackTrace();
 			System.out.println("syntax error. Invalid arguments");
+		}
+	}
+	
+	private void setFunction() {
+		if (args.size() == 1) {
+			calc.setFunction(args.get(0), calc.getNextEmptyFunc(), FunctionData.FunctionType.normal);
+		} else {
+			switch (args.get(2)) {
+			case "0":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
+				break;
+			case "1":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)),
+						FunctionData.FunctionType.derivative);
+				break;
+			case "2":
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)),
+						FunctionData.FunctionType.integral);
+				break;
+			default:
+				System.out.println(
+						"not a recognized function type. Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
+			}
 		}
 	}
 

@@ -4,9 +4,9 @@ import java.util.*;
 
 public class Calculator {
 	private List<FunctionData> functions = new ArrayList<FunctionData>();
-
 	private ExpressionEval eval = new ExpressionEval();
-
+	public double x;
+	
 	public Calculator() {
 		for (int i = 0; i < 10; i++) {
 			functions.add(new FunctionData());
@@ -19,7 +19,8 @@ public class Calculator {
 
 	public void displayFunctions() {
 		for (int i = 0; i < functions.size(); i++) {
-			System.out.println("Type:" + functions.get(i).type.toString() + "\t Y" + i + "=" + functions.get(i).function);
+			System.out
+					.println("Type:" + functions.get(i).type.toString() + "\t Y" + i + "=" + functions.get(i).function);
 		}
 	}
 
@@ -35,19 +36,32 @@ public class Calculator {
 	}
 
 	/**
+	 * 
+	 * @return returns the lowest index of an empty function. returns the last
+	 *         function if all are filled
+	 */
+	public int getNextEmptyFunc() {
+		int i;
+		for (i = 0; i == functions.size(); i++) {
+			if (functions.get(i).function.equals(""))
+				return i;
+		}
+		return i;
+	}
+
+	public void clearFunc() {
+		for (int i = 0; i < functions.size(); i++) {
+			functions.set(i, new FunctionData("", FunctionData.FunctionType.normal));
+		}
+	}
+
+	/**
 	 * handles function nesting and calc operations
 	 */
 	public double InterpretFunc(int index, double x) {
 		String y = functions.get(index).function;
-		int yIndex = 0;
-		while (y.contains("Y")) {
-			yIndex = y.indexOf("Y");
-			y = eval.sub(y, "(" + functions.get(Integer.parseInt(y.substring(yIndex + 1, yIndex + 2))).function + ")",
-					yIndex, yIndex + 2);
-			if (!y.contains("Y"))
-				break;
-		}
-
+		y = formatNested(y);
+		y = formatVariables(y);
 		if (Main.debug)
 			System.out.println("Interpreting function: " + y);
 
@@ -63,6 +77,28 @@ public class Calculator {
 			return 0;
 		}
 
+	}
+
+	private String formatNested(String y) {
+		int yIndex = 0;
+		while (y.contains("Y")) {
+			yIndex = y.indexOf("Y");
+			y = eval.sub(y, "(" + functions.get(Integer.parseInt(y.substring(yIndex + 1, yIndex + 2))).function + ")",
+					yIndex, yIndex + 2);
+			if (!y.contains("Y"))
+				break;
+		}
+		return y;
+	}
+
+	private String formatVariables(String y) {
+		for (int i = 0; i < y.length(); i++) {
+			if (y.charAt(i) == 'x') {
+				y = eval.sub(y, "(x)", i, i + 1);
+				i++;
+			}
+		}
+		return y;
 	}
 
 }
