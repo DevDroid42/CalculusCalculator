@@ -5,6 +5,7 @@ import java.util.*;
 public class CommandManager {
 	Calculator calc = new Calculator();
 	ExpressionEval eval = new ExpressionEval();
+	Graph graph = new Graph();
 	List<String> args;
 
 	/**

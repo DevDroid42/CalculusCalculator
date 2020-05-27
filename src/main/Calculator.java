@@ -42,7 +42,7 @@ public class Calculator {
 	 */
 	public int getNextEmptyFunc() {
 		int i;
-		for (i = 0; i == functions.size(); i++) {
+		for (i = 0; i < functions.size(); i++) {
 			if (functions.get(i).function.equals(""))
 				return i;
 		}

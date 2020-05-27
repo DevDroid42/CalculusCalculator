@@ -4,10 +4,10 @@ import java.awt.*;
 
 public class Graph {
 	public Graph() {
-		Frame f = new Frame("Canvas Example");
+		Frame f = new Frame("Graph");
 		f.add(new MyCanvas());
 		f.setLayout(null);
-		f.setSize(400, 400);
+		f.setSize(800, 800);
 		f.setVisible(true);
 	}
 
@@ -19,7 +19,7 @@ public class Graph {
 class MyCanvas extends Canvas {
 	public MyCanvas() {
 		setBackground(Color.GRAY);
-		setSize(300, 200);
+		setSize(800, 800);
 	}
 
 	public void paint(Graphics g) {
