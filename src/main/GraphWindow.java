@@ -1,19 +1,52 @@
 package main;
 
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 public class GraphWindow {
 
+	JFrame f;
+	Graph graph;
 	public GraphWindow() {
-		JFrame f = new JFrame("Graph");
-		f.add(new Graph());
+		f = new JFrame("Graph");
+		graph = new Graph();
+		f.add(graph);
 		f.setLayout(null);
 		f.setSize(800, 800);
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		f.addComponentListener(new FrameListen());
+	}
+	
+	private class FrameListen implements ComponentListener{
+
+		@Override
+		public void componentResized(ComponentEvent e) {
+			graph.resizeGraph(f.getWidth(), f.getHeight());;		
+		}
+
+		@Override
+		public void componentMoved(ComponentEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void componentShown(ComponentEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void componentHidden(ComponentEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }
 
@@ -37,6 +70,11 @@ class Graph extends Canvas {
 		setPoint(-5, -2);
 		System.out.println(pixelToNum(new Point<Integer>(400, 400)));
 		drawAxis();
+		repaint();
+	}
+	
+	public void resizeGraph(int x, int y) {
+		super.setSize(x,y);
 		repaint();
 	}
 
