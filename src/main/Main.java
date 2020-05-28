@@ -27,6 +27,8 @@ public class Main {
 			+ "\n\tsf <function>"
 			+ "\nsft -set Function Type. used to set the function type"
 			+ "\n\tsft <function index> <functionType (0=normal 1=derivitive 2=integral)>"
+			+ "\ncf -clear function. if used without arguments will clear all functions from memory. argument specifies function to clear"
+			+ "\n\tcf <function index>"
 			+ "\nview -displays a menu of all the functions"
 			+ "\ngraph -will open a graphical graphing window and graph all functions in memory. if used"
 			+ "\nwithout arguments it will use the last bounds set"

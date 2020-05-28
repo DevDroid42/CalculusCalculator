@@ -12,7 +12,8 @@ public class CommandManager {
 
 	/**
 	 * takes in a string and extracts the command and arguments. Then calls and
-	 * returns the data in the form of a string	 
+	 * returns the data in the form of a string
+	 * 
 	 * @param input
 	 * @return
 	 */
@@ -47,8 +48,15 @@ public class CommandManager {
 			case ("sft"):
 				setFunctionType();
 				break;
-			case ("clearFunc"):
-				calc.clearFunc();
+			case ("zero"):
+				System.out.println("x= " + calc.zero(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1))));
+				break;
+			case ("cf"):
+				if (args.size() == 0) {
+					calc.clearFunc();
+				} else {
+					calc.clearFunc(Integer.parseInt(args.get(0)));
+				}
 				break;
 			case ("view"):
 				calc.displayFunctions();
@@ -148,7 +156,8 @@ public class CommandManager {
 	}
 
 	/**
-	 * gets all terms enclosed by spaces in input	 
+	 * gets all terms enclosed by spaces in input
+	 * 
 	 * @param _input
 	 * @return a list of arguments
 	 */

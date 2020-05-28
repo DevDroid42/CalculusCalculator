@@ -19,6 +19,11 @@ public class ExpressionEval {
 		expression = removeSpaces(expression);
 		expression = formatSubtraction(expression);
 		expression = implicitMult(expression);
+		/*while (expression.contains("x")) {
+			expression = sub(expression, "" + Calculator.x, expression.indexOf("x"), expression.indexOf("x") + 1);
+			if (Main.debug)
+				System.out.println(expression);
+		}*/
 		return EvaluateR(expression);
 
 	}
