@@ -1,12 +1,13 @@
 package main;
 
+import java.awt.Color;
 import java.util.*;
 
 public class Calculator {
-	private List<FunctionData> functions = new ArrayList<FunctionData>();
+	public List<FunctionData> functions = new ArrayList<FunctionData>();
 	private ExpressionEval eval = new ExpressionEval();
 	public double x;
-	
+
 	public Calculator() {
 		for (int i = 0; i < 10; i++) {
 			functions.add(new FunctionData());
@@ -19,8 +20,8 @@ public class Calculator {
 
 	public void displayFunctions() {
 		for (int i = 0; i < functions.size(); i++) {
-			System.out
-					.println("Type:" + functions.get(i).type.toString() + "\t Y" + i + "=" + functions.get(i).function);
+			System.out.println(functions.get(i).color.toString().substring(14) + "\tType:"
+					+ functions.get(i).type.toString() + "\t Y" + i + "=" + functions.get(i).function);
 		}
 	}
 
@@ -104,6 +105,10 @@ public class Calculator {
 }
 
 class FunctionData {
+	public FunctionType type = FunctionType.normal;
+	public String function = "";
+	public Color color;
+
 	public enum FunctionType {
 		normal, derivative, integral
 	};
@@ -111,13 +116,13 @@ class FunctionData {
 	public FunctionData(String function, FunctionType type) {
 		this.function = function;
 		this.type = type;
+		this.color = Color.white;
 	}
 
 	public FunctionData() {
 		this.function = "";
 		this.type = FunctionType.normal;
+		this.color = Color.white;
 	}
 
-	public FunctionType type = FunctionType.normal;
-	public String function = "";
 }

@@ -4,12 +4,15 @@ public class ExpressionEval {
 	private char[] decimals = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', 'E', '-' };
 
 	public String Evaluate(String expression, Double in) {
+		expression = removeSpaces(expression);
+		expression = formatSubtraction(expression);
+		expression = implicitMult(expression);
 		while (expression.contains("x")) {
 			expression = sub(expression, in.toString(), expression.indexOf("x"), expression.indexOf("x") + 1);
 			if (Main.debug)
 				System.out.println(expression);
 		}
-		return Evaluate(expression);
+		return EvaluateR(expression);
 	}
 
 	public String Evaluate(String expression) {

@@ -1,17 +1,18 @@
 package main;
 
+import java.awt.Color;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class CommandManager {
 	Calculator calc = new Calculator();
 	ExpressionEval eval = new ExpressionEval();
-	GraphWindow graph = new GraphWindow();
+	GraphWindow graphWin = new GraphWindow();
 	List<String> args;
 
 	/**
 	 * takes in a string and extracts the command and arguments. Then calls and
-	 * returns the data in the form of a string
-	 * 
+	 * returns the data in the form of a string	 
 	 * @param input
 	 * @return
 	 */
@@ -39,6 +40,13 @@ public class CommandManager {
 			case ("sf"):
 				setFunction();
 				break;
+			case ("sfc"):
+				setFunctionColor(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)),
+						Integer.parseInt(args.get(2)), Integer.parseInt(args.get(3)));
+				break;
+			case ("sft"):
+				setFunctionType();
+				break;
 			case ("clearFunc"):
 				calc.clearFunc();
 				break;
@@ -54,8 +62,12 @@ public class CommandManager {
 				Main.debug = Boolean.parseBoolean(args.get(0));
 				break;
 			case ("graph"):
+				if (args.size() > 0) {
+					setGraphBounds();
+				}
+				Graph();
 				break;
-			case ("evaluate"):
+			case ("eval"):
 				System.out.println(calc.InterpretFunc(Integer.parseInt(args.get(0)), Double.parseDouble(args.get(1))));
 				break;
 			case ("exit"):
@@ -70,7 +82,16 @@ public class CommandManager {
 			System.out.println("syntax error. Invalid arguments");
 		}
 	}
-	
+
+	private void setGraphBounds() {
+		graphWin.graph.setGraphBounds(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)),
+				Integer.parseInt(args.get(2)), Integer.parseInt(args.get(3)));
+	}
+
+	private void Graph() {
+		graphWin.graph(calc);
+	}
+
 	private void setFunction() {
 		if (args.size() == 1) {
 			calc.setFunction(args.get(0), calc.getNextEmptyFunc(), FunctionData.FunctionType.normal);
@@ -80,12 +101,10 @@ public class CommandManager {
 				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.normal);
 				break;
 			case "1":
-				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)),
-						FunctionData.FunctionType.derivative);
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.derivative);
 				break;
 			case "2":
-				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)),
-						FunctionData.FunctionType.integral);
+				calc.setFunction(args.get(0), Integer.parseInt(args.get(1)), FunctionData.FunctionType.integral);
 				break;
 			default:
 				System.out.println(
@@ -94,9 +113,42 @@ public class CommandManager {
 		}
 	}
 
+	private void setFunctionType() {
+		switch (args.get(1)) {
+		case "0":
+			calc.functions.get(Integer.parseInt(args.get(0))).type = FunctionData.FunctionType.normal;
+			break;
+		case "1":
+			calc.functions.get(Integer.parseInt(args.get(0))).type = FunctionData.FunctionType.derivative;
+			break;
+		case "2":
+			calc.functions.get(Integer.parseInt(args.get(0))).type = FunctionData.FunctionType.integral;
+			break;
+		default:
+			System.out.println("invalid function type.Use 0-2. 0 is normal, 1 is derivitive, 2 is integral");
+		}
+
+	}
+
+	private void setFunctionColor(int index, String colorName) {
+		Color color;
+		try {
+			Field field = Class.forName("java.awt.Color").getField("colorName");
+			color = (Color) field.get(null);
+		} catch (Exception e) {
+			System.out.println("invalid color");
+			color = null; // Not defined
+		}
+		calc.functions.get(index).color = color;
+	}
+
+	private void setFunctionColor(int index, int r, int g, int b) {
+		Color color = new Color(r, g, b);
+		calc.functions.get(index).color = color;
+	}
+
 	/**
-	 * gets all terms enclosed by spaces in input
-	 * 
+	 * gets all terms enclosed by spaces in input	 
 	 * @param _input
 	 * @return a list of arguments
 	 */
