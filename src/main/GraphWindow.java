@@ -226,7 +226,7 @@ class Graph extends Canvas {
 		// same as the x axis above
 		for (int i = 0; i < super.getSize().height; i++) {
 			Point<Double> axisPoint = pixelToNum(new Point<Integer>(zero.x, i));
-			if (Math.abs(axisPoint.y - (int) (double) axisPoint.y) < 0.01 * (yBounds.y - yBounds.x) / 30) {
+			if (Math.abs(axisPoint.y - (int) (double) axisPoint.y) < 0.01 * (yBounds.x - yBounds.y) / 30) {
 				setPoint(pixelToNum(new Point<Integer>(zero.x + 1, i)));
 				setPoint(pixelToNum(new Point<Integer>(zero.x - 1, i)));
 			}
