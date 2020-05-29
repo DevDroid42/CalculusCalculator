@@ -17,16 +17,18 @@ public class GraphWindow {
 	Graph graph;
 
 	public GraphWindow(Calculator calc) {
+		System.setProperty("sun.awt.noerasebackground", "true");
 		this.calc = calc;
 		f = new JFrame("Graph");
 		graph = new Graph();
+		graph.setFocusable(true);
+		graph.addKeyListener(new KeyListen());
 		f.add(graph);
 		f.setLayout(null);
-		f.setSize(800, 800);
-		graph.setFocusable(true);
+		f.setSize(800, 800);		
 		f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		f.addComponentListener(new FrameListen());
-		graph.addKeyListener(new KeyListen());
+		
 	}
 
 	public void graph() {
@@ -44,8 +46,14 @@ public class GraphWindow {
 					// set a point with that scaled number and interpret the function at that number
 					Point<Double> calculatedPoint = new Point<Double>(number.x, calc.InterpretFunc(i, number.x),
 							calc.functions.get(i).color, j != 0);
+					
+					//check if the functionType is integral
+					if(calc.functions.get(i).type == FunctionData.FunctionType.integral) {
+						Point<Double> zeroP = new Point<Double>(calculatedPoint.x, 0.0, calculatedPoint.color, calculatedPoint.isLine);
+						graph.setPoint(graph.pixelToNum(graph.numToPixel(zeroP)));
+					}
 					// the conversion from number to pixel back to number fixes the position of the
-					// graphs being inverted.
+					// graphs being inverted. Not pretty but works.
 					graph.setPoint(graph.pixelToNum(graph.numToPixel(calculatedPoint)));
 				}
 			}
@@ -57,8 +65,7 @@ public class GraphWindow {
 
 		@Override
 		public void componentResized(ComponentEvent e) {
-			graph.resizeGraph(f.getWidth(), f.getHeight());
-			;
+			graph.resizeGraph(f.getWidth(), f.getHeight());			
 		}
 
 		@Override
@@ -153,7 +160,7 @@ class Graph extends Canvas {
 
 	public Graph() {
 		xBounds = new Point<Double>(-10.0, 10.0);
-		yBounds = new Point<Double>(-10.0, 10.0);
+		yBounds = new Point<Double>(10.0, -10.0);
 		points = new ArrayList<Point<Double>>();
 
 		setBackground(Color.BLACK);
@@ -170,8 +177,8 @@ class Graph extends Canvas {
 	public void setGraphBounds(double xl, double xh, double yl, double yh) {
 		xBounds.x = xl;
 		xBounds.y = xh;
-		yBounds.x = yl;
-		yBounds.y = yh;
+		yBounds.y = yl;
+		yBounds.x = yh;
 	}
 
 	public void zoomIn() {

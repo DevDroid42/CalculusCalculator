@@ -77,7 +77,7 @@ public class Calculator {
 		case derivative:
 			return derivitive(y, x);
 		case integral:
-			return integral(y, x);
+			return Double.parseDouble(eval.Evaluate(y, x));
 		default:
 			System.out.println("Error invalid fucntion type");
 			return 0;
