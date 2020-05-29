@@ -7,7 +7,7 @@ import java.util.*;
 public class CommandManager {
 	Calculator calc = new Calculator();
 	ExpressionEval eval = new ExpressionEval();
-	GraphWindow graphWin = new GraphWindow();
+	GraphWindow graphWin = new GraphWindow(calc);
 	List<String> args;
 
 	/**
@@ -92,12 +92,12 @@ public class CommandManager {
 	}
 
 	private void setGraphBounds() {
-		graphWin.graph.setGraphBounds(Integer.parseInt(args.get(0)), Integer.parseInt(args.get(1)),
-				Integer.parseInt(args.get(2)), Integer.parseInt(args.get(3)));
+		graphWin.graph.setGraphBounds(Double.parseDouble(args.get(0)), Double.parseDouble(args.get(1)),
+				Double.parseDouble(args.get(2)), Double.parseDouble(args.get(3)));
 	}
 
 	private void Graph() {
-		graphWin.graph(calc);
+		graphWin.graph();
 	}
 
 	private void setFunction() {

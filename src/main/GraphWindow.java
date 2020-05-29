@@ -3,26 +3,33 @@ package main;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 public class GraphWindow {
 
+	Calculator calc;
+
 	JFrame f;
 	Graph graph;
 
-	public GraphWindow() {
+	public GraphWindow(Calculator calc) {
+		this.calc = calc;
 		f = new JFrame("Graph");
 		graph = new Graph();
 		f.add(graph);
 		f.setLayout(null);
 		f.setSize(800, 800);
+		graph.setFocusable(true);
 		f.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		f.addComponentListener(new FrameListen());
+		graph.addKeyListener(new KeyListen());
 	}
 
-	public void graph(Calculator calc) {
+	public void graph() {
 		graph.points.clear();
 		graph.drawAxis();
 		f.setVisible(true);
@@ -35,8 +42,11 @@ public class GraphWindow {
 					// convert the pixel to a scaled number value
 					Point<Double> number = graph.pixelToNum(new Point<Integer>(j, 0));
 					// set a point with that scaled number and interpret the function at that number
-					Point<Double> calculatedPoint = new Point<Double>(number.x, calc.InterpretFunc(i, number.x), calc.functions.get(i).color, j!=0);
-					graph.setPoint(calculatedPoint);
+					Point<Double> calculatedPoint = new Point<Double>(number.x, calc.InterpretFunc(i, number.x),
+							calc.functions.get(i).color, j != 0);
+					// the conversion from number to pixel back to number fixes the position of the
+					// graphs being inverted.
+					graph.setPoint(graph.pixelToNum(graph.numToPixel(calculatedPoint)));
 				}
 			}
 		}
@@ -70,18 +80,80 @@ public class GraphWindow {
 		}
 
 	}
+
+	private class KeyListen implements KeyListener {
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (Main.debug)
+				System.out.println(e.getKeyCode());
+
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_UP:
+				translate(new Point<Integer>(0, 1));
+				break;
+			case KeyEvent.VK_W:
+				translate(new Point<Integer>(0, 1));
+				break;
+			case KeyEvent.VK_LEFT:
+				translate(new Point<Integer>(1, 0));
+				break;
+			case KeyEvent.VK_A:
+				translate(new Point<Integer>(1, 0));
+				break;
+			case KeyEvent.VK_DOWN:
+				translate(new Point<Integer>(0, -1));
+				break;
+			case KeyEvent.VK_S:
+				translate(new Point<Integer>(0, -1));
+				break;
+			case KeyEvent.VK_RIGHT:
+				translate(new Point<Integer>(-1, 0));
+				break;
+			case KeyEvent.VK_D:
+				translate(new Point<Integer>(-1, 0));
+				break;
+			case KeyEvent.VK_PAGE_UP:
+				graph.zoomIn();
+				graph();
+				break;
+			case KeyEvent.VK_PAGE_DOWN:
+				graph.zoomOut();
+				graph();
+				break;
+			}
+		}
+
+		private void translate(Point<Integer> p) {
+			graph.translate(p);
+			graph();
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
 }
 
 class Graph extends Canvas {
-	public Point<Integer> xBounds;
-	public Point<Integer> yBounds;
+	public Point<Double> xBounds;
+	public Point<Double> yBounds;
 	// collection of points represented by percentages of their position on the
 	// canvas
 	public java.util.List<Point<Double>> points;
 
 	public Graph() {
-		xBounds = new Point<Integer>(-20, 10);
-		yBounds = new Point<Integer>(-10, 10);
+		xBounds = new Point<Double>(-10.0, 10.0);
+		yBounds = new Point<Double>(-10.0, 10.0);
 		points = new ArrayList<Point<Double>>();
 
 		setBackground(Color.BLACK);
@@ -94,12 +166,37 @@ class Graph extends Canvas {
 		super.setSize(x, y);
 		repaint();
 	}
-	
-	public void setGraphBounds(int xl, int xh, int yl, int yh) {
+
+	public void setGraphBounds(double xl, double xh, double yl, double yh) {
 		xBounds.x = xl;
 		xBounds.y = xh;
 		yBounds.x = yl;
 		yBounds.y = yh;
+	}
+
+	public void zoomIn() {
+		double mult = 0.9;
+		xBounds.x *= mult;
+		xBounds.y *= mult;
+		yBounds.x *= mult;
+		yBounds.y *= mult;
+	}
+
+	public void zoomOut() {
+		double mult = 1.1;
+		xBounds.x *= mult;
+		xBounds.y *= mult;
+		yBounds.x *= mult;
+		yBounds.y *= mult;
+	}
+
+	public void translate(Point<Integer> direction) {
+		double xDis = xBounds.y - xBounds.x;
+		double yDis = yBounds.y - yBounds.x;
+		xBounds.x += direction.x * (xDis * 0.05);
+		xBounds.y += direction.x * (xDis * 0.05);
+		yBounds.x += direction.y * (yDis * 0.05);
+		yBounds.y += direction.y * (yDis * 0.05);
 	}
 
 	public void drawAxis() {
@@ -133,13 +230,14 @@ class Graph extends Canvas {
 	/**
 	 * takes in a point as a pixel position and converts it to a number based on the
 	 * bounds of the graph
+	 * 
 	 * @param point
 	 * @return
 	 */
 	public Point<Double> pixelToNum(Point<Integer> point) {
 		double x = (xBounds.y - xBounds.x) * ((double) point.x / super.getSize().width) + xBounds.x;
 		double y = (yBounds.y - yBounds.x) * ((double) point.y / super.getSize().height) + yBounds.x;
-		return new Point<Double>(x, y, point.color);
+		return new Point<Double>(x, y, point.color, point.isLine);
 	}
 
 	/**
@@ -152,7 +250,7 @@ class Graph extends Canvas {
 		double scaledX = (point.x - xBounds.x) / (xBounds.y - xBounds.x);
 		double scaledY = (point.y - yBounds.x) / (yBounds.y - yBounds.x);
 		Point<Integer> pixel = new Point<Integer>((int) (scaledX * super.getSize().width + 0.5),
-				super.getSize().height - (int) (scaledY * super.getHeight() + 0.5), point.color);
+				super.getSize().height - (int) (scaledY * super.getHeight() + 0.5), point.color, point.isLine);
 		return pixel;
 	}
 
@@ -194,15 +292,15 @@ class Graph extends Canvas {
 	 */
 	@Override
 	public void paint(Graphics g) {
-		//keeps the last pixel in memory to draw lines
+		// keeps the last pixel in memory to draw lines
 		Point<Integer> lastPixel = new Point<Integer>(0, 0);
-		//Iterate through each of the calculated points
+		// Iterate through each of the calculated points
 		for (int i = 0; i < points.size(); i++) {
 			Point<Double> point = points.get(i);
-			//convert the points from number coordinates to pixel coordinates			
+			// convert the points from number coordinates to pixel coordinates
 			Point<Integer> pixel = new Point<Integer>((int) (point.x * super.getSize().width + 0.5),
 					super.getSize().height - (int) (point.y * super.getHeight() + 0.5), point.color, point.isLine);
-			
+
 			g.setColor(pixel.color);
 			if (pixel.isLine && lastPixel.isLine) {
 				g.drawLine(pixel.x, pixel.y, lastPixel.x, lastPixel.y);

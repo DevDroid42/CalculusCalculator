@@ -30,6 +30,6 @@ class Point <T>{
 	@Override
 	public String toString() {
 		return "Point [x=" + x + ", y=" + y + ", color=" + color + ", line=" + isLine + "]";
-	}
+	}		
 		
 }
